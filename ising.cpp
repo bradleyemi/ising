@@ -22,7 +22,7 @@ void initialize(MatrixXd &m, int grid_size) {
     uniform_int_distribution<int> spin_distribution(0,1);
     for (size_t i = 0; i < grid_size; i++) {
         for (size_t j = 0; j < grid_size; j++) {
-            m(i,j) = -1 + 2 * spin_distribution(generator);
+            m(i,j) = -1; //+ 2 * spin_distribution(generator);
         }
     }
 }
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
   else if (argc == 4) {
     int grid_size = atoi(argv[1]);
     int iterations_per_site = atoi(argv[2]);
-    double temperature = atol(argv[3]);
+    double temperature = atof(argv[3]);
     if (grid_size == 0 || iterations_per_site == 0 || temperature == 0) {
         cerr << "Usage: ./ising <grid_size> <iterations_per_site> [<temperature>] [<J>]" << endl;
     }
@@ -98,14 +98,15 @@ int main(int argc, char* argv[])
   else if (argc == 5) {
     int grid_size = atoi(argv[1]);
     int iterations_per_site = atoi(argv[2]);
-    double temperature = atol(argv[3]);
-    double J = atol(argv[4]);
-    if (grid_size == 0 || iterations_per_site == 0 || temperature == 0) {
+    double temperature = atof(argv[3]);
+    double J = atof(argv[4]);
+    if (grid_size == 0 || iterations_per_site == 0 || temperature == 0 || J == 0) {
         cerr << "Usage: ./ising <grid_size> <iterations_per_site> [<temperature>] [<J>]" << endl;
     }
     simulate(grid_size, iterations_per_site, temperature, J);
   }
   else {
+    cout << "argc " << argc;
     cerr << "Usage: ./ising <grid_size> <iterations_per_site> [<temperature>] [<J>]" << endl;
   }
 }
