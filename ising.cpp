@@ -4,17 +4,16 @@
 #include <cstdlib>
 #include <iostream>
 #include <random>
+#include <csignal>
+#include <sys/types.h>
+#include <unistd.h>
 #include <Eigen/Dense>
 
 using namespace std;
 using namespace Eigen;
 
-// utility function to get sgn(x)
-int sign(double x) {
-    if (x > 0) return 1;
-    else if (x == 0) return 0;
-    else return -1;
-}
+const int BURN_IN_ITERATIONS = 1000;
+const int SAMPLE_RATE = 10;
 
 // initializes a grid with random spins. 
 void initialize(MatrixXd &m, int grid_size) {
@@ -22,7 +21,7 @@ void initialize(MatrixXd &m, int grid_size) {
     uniform_int_distribution<int> spin_distribution(0,1);
     for (size_t i = 0; i < grid_size; i++) {
         for (size_t j = 0; j < grid_size; j++) {
-            m(i,j) = -1; //+ 2 * spin_distribution(generator);
+            m(i,j) = 1; //+ 2 * spin_distribution(generator);
         }
     }
 }
@@ -40,6 +39,9 @@ int get_index_above(int idx, int grid_size) {
 }
 
 void simulate(int grid_size, int iterations_per_site, double temperature=2.0, double J=1.0) {
+    // get pid of this process
+    pid_t pid = getpid();
+
     // initialize random number generator
     default_random_engine generator;
     uniform_int_distribution<int> index_distribution(0, grid_size - 1);
@@ -63,17 +65,23 @@ void simulate(int grid_size, int iterations_per_site, double temperature=2.0, do
         int bottom = m(x, get_index_below(y, grid_size));
 
         // calculate energy difference between states and decide whether to accept
-        double dE = 2 * J * sign(m(x,y)) * (left + right + top + bottom);
+        double dE = 2 * J * m(x,y) * (left + right + top + bottom);
         //cout << "dE: " << dE << endl;
         //cout << "acceptance p: " << exp(-dE / temperature) << endl;
-        if (sign(dE) <= 0) {
+        if (m(x,y) <= 0) {
             m(x,y) = -m(x,y);
         }
         else if (acceptance_distribution(generator) < exp(-dE / temperature)) {
             m(x,y) = -m(x,y);
         }
+        if ((i % (grid_size * grid_size * SAMPLE_RATE) == 0) &&
+            (i >= grid_size * grid_size * BURN_IN_ITERATIONS)) {
+            cout << m << endl;
+            cout << "STOP" << endl;
+            kill(pid, SIGSTOP);
+        }
     }
-    cout << m << endl;
+    cout << "DONE" << endl;
 }
 
 int main(int argc, char* argv[])
