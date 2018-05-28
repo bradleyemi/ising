@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 print("Running simulation for temperature:", args.temperature)
 s = time.time()
-metrics = simulate_local(GRID_SIZE, ITERATIONS_PER_SITE, args.temperature, BURN_IN, SAMPLE_RATE)
+metrics = simulate_local(GRID_SIZE, ITERATIONS_PER_SITE, args.temperature, burn_in=BURN_IN, sample_rate=SAMPLE_RATE)
 print("Results:")
 print("Specific heat:", metrics.specific_heat)
 print("Magnetization:", metrics.magnetization)
