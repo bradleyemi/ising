@@ -12,7 +12,7 @@
 using namespace std;
 using namespace Eigen;
 
-const int BURN_IN_ITERATIONS = 1000;
+const int BURN_IN_ITERATIONS = 2000;
 const int SAMPLE_RATE = 10;
 
 // initializes a grid with random spins. 
@@ -68,7 +68,7 @@ void simulate(int grid_size, int iterations_per_site, double temperature=2.0, do
         double dE = 2 * J * m(x,y) * (left + right + top + bottom);
         //cout << "dE: " << dE << endl;
         //cout << "acceptance p: " << exp(-dE / temperature) << endl;
-        if (m(x,y) <= 0) {
+        if (dE <= 0) {
             m(x,y) = -m(x,y);
         }
         else if (acceptance_distribution(generator) < exp(-dE / temperature)) {
