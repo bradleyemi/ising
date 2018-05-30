@@ -1,3 +1,4 @@
+from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -86,6 +87,50 @@ def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=100
         if (i % (grid_size ** 2 * sample_rate) == 0) and (i >= grid_size ** 2 * burn_in):
             metrics.append(Metric(arr.mean(), get_energy(arr, J)))
     return Metrics(metrics, temperature, grid_size)
+
+def get_neighbors(spin, arr):
+    x = seed[0]
+    y = seed[1]
+    left = ((x-1 % grid_size), y, arr[(x-1) % grid_size, y])
+    right = ((x+1 % grid_size), y, arr[(x+1) % grid_size, y])
+    up = (x, ((y+1) % grid_size), arr[x, (y+1) % grid_size])
+    down = (x, ((y-1) % grid_size), arr[x, (y-1) % grid_size])
+    neighbors = [left, right, up, down]
+    return neighbors
+
+def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=1000):
+    metrics = []
+    arr = np.ones((grid_size, grid_size))
+    flips = 0
+    add_probability = 1 - np.exp(-2 * J / temperature)
+    while flips < int(grid_size ** 2 * iterations_per_site):
+        x = random.randint(0, grid_size - 1)
+        y = random.randint(0, grid_size - 1)
+        # a spin is a tuple of x coordinate, y coordinate, spin
+        seed = (x, y, arr[x, y])
+        cluster = []
+        cluster.append(seed)
+        i = 0
+        while i < len(cluster):
+            spin = cluster[i]
+            neighbors = get_neighbors(spin, arr)
+            for neighbor in neighbors:
+                if neighbor in cluster:
+                    continue
+                if (neighbor[2] == seed[2]) and (random.random() < add_probability):
+                    cluster.append(neighbor)
+            i += 1
+        for spin in cluster:
+            arr[spin[0], spin[1]] = -arr[spin[0], spin[1]]
+        old_flips = copy(flips)
+        flips += len(cluster)
+        for it in range(old_flips, flips):
+            if (it % (grid_size ** 2 * sample_rate) == 0) and (it >= grid_size ** 2 * burn_in):
+                metrics.append(Metric(arr.mean(), get_energy(arr, J)))
+    return Metrics(metrics, temperature, grid_size)
+
+
+
 
 def simulate(grid_size, iterations_per_site, temperature, J=1):
     chld = subprocess.Popen(["./ising",

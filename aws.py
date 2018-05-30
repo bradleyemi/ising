@@ -20,8 +20,8 @@ print("Available instances:", n_instances)
 
 START_TEMPERATURE = 2.2
 END_TEMPERATURE = 2.269
-N_TEMPERATURES = 200
-GRID_SIZE = 100
+N_TEMPERATURES = 100
+GRID_SIZE = 50
 
 T_c = 2.269
 #temperatures = np.linspace(START_TEMPERATURE, END_TEMPERATURE, N_TEMPERATURES)
@@ -81,7 +81,7 @@ class Experiment(object):
 
 experiment = Experiment(all_metrics, temperatures)
 
-with open("g100_200t_20000iter_closetocritical_below_log_metrics.pkl", 'wb') as f:
+with open("g50_100t_20000iter_closetocritical_below_log_metrics.pkl", 'wb') as f:
     pickle.dump(experiment, f)
 
 
