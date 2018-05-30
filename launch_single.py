@@ -11,7 +11,7 @@ SAMPLE_RATE = 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("temperature", help="temperature to run the experiment at", type=float)
-parser.add_argument("grid_size", help="size of the grid to use", type=float)
+parser.add_argument("grid_size", help="size of the grid to use", type=int)
 parser.add_argument("outfile", help="name of the place to write the metrics to", type=str)
 args = parser.parse_args()
 
