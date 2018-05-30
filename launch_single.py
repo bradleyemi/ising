@@ -4,9 +4,8 @@ import numpy as np
 from utils import simulate_local
 import time
 
-GRID_SIZE = 50
-ITERATIONS_PER_SITE = 5000
-BURN_IN = 1000
+ITERATIONS_PER_SITE = 20000
+BURN_IN = 2000
 SAMPLE_RATE = 10
 
 parser = argparse.ArgumentParser()
