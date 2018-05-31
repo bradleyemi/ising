@@ -20,9 +20,12 @@ s = time.time()
 if args.wolff:
     print("Running Wolff simulation for temperature:", args.temperature)
     metrics = simulate_wolff(args.grid_size, ITERATIONS_PER_SITE, args.temperature, burn_in=BURN_IN, sample_rate=SAMPLE_RATE)
+    print("Specific heat:", metrics.specific_heat)
 else:
     print("Running Metropolis simulation for temperature:", args.temperature)
     metrics = simulate_local(args.grid_size, ITERATIONS_PER_SITE, args.temperature, burn_in=BURN_IN, sample_rate=SAMPLE_RATE)
+    print("Energy:", metrics.energy)
+    print("Specific heat:", metrics.specific_heat)
 
 with open(args.outfile, 'wb') as f:
     pickle.dump(metrics, f)

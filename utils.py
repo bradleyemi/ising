@@ -63,7 +63,7 @@ def get_energy(arr, J):
     down = np.roll(arr, -1, axis=0)
     left = np.roll(arr, -1, axis=1)
     right = np.roll(arr, 1, axis=1)
-    return -J * np.multiply(arr, up + down + left + right)
+    return -J * np.multiply(arr, up + down + left + right).sum()
 
 def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=1000, sample_rate=10):
     metrics = []
