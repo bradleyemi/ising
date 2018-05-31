@@ -3,6 +3,7 @@ import paramiko
 import scp
 import numpy as np
 import pickle
+import time
 import matplotlib.pyplot as plt
 
 python_command = '/home/ubuntu/anaconda3/bin/python ./ising/launch_single.py'
@@ -42,8 +43,10 @@ for batch in range(batches):
             break
         print("running on instance:", instance.public_dns_name)
         client.connect(hostname=instance.public_dns_name, username="ubuntu", pkey=key)
-        _, stdout, _  = client.exec_command('git -C ./ising fetch && git -C ./ising pull')
+        _, stdout, stderr  = client.exec_command('git -C ./ising stash && git -C ./ising stash drop && git -C ./ising pull')
+        # wait for the git pull before executing...
         print(stdout.read().decode())
+        print(stderr.read().decode())
         cmd = python_command + ' ' + str(GRID_SIZE) + ' ' + str(temperatures[temperature_index]) + ' ' + str(temperatures[temperature_index]) + '.pkl'
         if USE_WOLFF:
           cmd += ' --wolff' 

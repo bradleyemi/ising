@@ -1,7 +1,5 @@
 from copy import copy
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import random
 import subprocess
 import signal
@@ -171,7 +169,3 @@ def simulate(grid_size, iterations_per_site, temperature, J=1):
     chld.wait()
     #print(means)
     return Metrics(metrics, temperature, grid_size)
-
-def plot_matrix(arr):
-    img = plt.imshow((arr + 1.) * 255. / 2.)
-    plt.show()
