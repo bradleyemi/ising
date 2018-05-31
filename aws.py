@@ -22,8 +22,9 @@ print("Available instances:", n_instances)
 START_TEMPERATURE = 2.2
 END_TEMPERATURE = 2.269
 N_TEMPERATURES = 20
-GRID_SIZE = 50
+GRID_SIZE = 25
 USE_WOLFF = True
+N_CONNECTION_ATTEMPTS = 3
 
 T_c = 2.269
 #temperatures = np.linspace(START_TEMPERATURE, END_TEMPERATURE, N_TEMPERATURES)
@@ -42,8 +43,15 @@ for batch in range(batches):
         if temperature_index == N_TEMPERATURES:
             break
         print("running on instance:", instance.public_dns_name)
-        client.connect(hostname=instance.public_dns_name, username="ubuntu", pkey=key)
-        _, stdout, stderr  = client.exec_command('git -C ./ising stash && git -C ./ising stash drop && git -C ./ising pull')
+        for connection_attempt in range(N_CONNECTION_ATTEMPTS):
+            try:
+                client.connect(hostname=instance.public_dns_name, username="ubuntu", pkey=key)
+                break
+            except:
+                if connection_attempt == N_CONNECTION_ATTEMPTS - 1:
+                    raise("Number of connection attempts maxed out.")
+
+        _, stdout, stderr  = client.exec_command('git -C ./ising pull')
         # wait for the git pull before executing...
         print(stdout.read().decode())
         print(stderr.read().decode())
@@ -58,7 +66,7 @@ for batch in range(batches):
         temperature_index += 1
 
     for instance_number, output in enumerate(outputs):
-        print("Output {} of {}".format(temperature_indexes[instance_number], N_TEMPERATURES))
+        print("Output {} of {}".format(temperature_indexes[instance_number] + 1, N_TEMPERATURES))
         print("STDOUT")
         print(output.read().decode())
         print("STDERR")
@@ -68,7 +76,13 @@ for batch in range(batches):
         if instance_number >= len(temperature_indexes):
             break
         print("collecting output from instance:", instance.public_dns_name)
-        client.connect(hostname=instance.public_dns_name, username="ubuntu", pkey=key)
+        for connection_attempt in range(N_CONNECTION_ATTEMPTS):
+            try:
+                client.connect(hostname=instance.public_dns_name, username="ubuntu", pkey=key)
+                break
+            except:
+                if connection_attempt == N_CONNECTION_ATTEMPTS - 1:
+                    raise("Number of connection attempts maxed out.")
         scp_client = scp.SCPClient(client.get_transport())
         scp_client.get(str(temperatures[temperature_indexes[instance_number]]) + ".pkl", local_path='./experiments')
 

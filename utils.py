@@ -46,10 +46,10 @@ class Metrics(object):
         (np.array([m.energy_sq for m in metrics_sample]).mean() - \
         np.array([m.energy for m in metrics_sample]).mean() ** 2)
 
-    def calculate_error(self, metric_handle, n_samples=100):
+    def calculate_error(self, metric_handle):
         ms = []
         m_sqs = []
-        for _ in range(n_samples):
+        for _ in range(10):
             choice = np.random.choice(self.metrics, size=len(self.metrics), replace=True)
             m = metric_handle(choice)
             m_sq = metric_handle(choice) ** 2
