@@ -89,16 +89,17 @@ def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=100
     return Metrics(metrics, temperature, grid_size)
 
 def get_neighbors(spin, arr):
-    x = seed[0]
-    y = seed[1]
-    left = ((x-1 % grid_size), y, arr[(x-1) % grid_size, y])
-    right = ((x+1 % grid_size), y, arr[(x+1) % grid_size, y])
+    x = spin[0]
+    y = spin[1]
+    grid_size = arr.shape[0]
+    left = ((x-1) % grid_size, y, arr[(x-1) % grid_size, y])
+    right = ((x+1) % grid_size, y, arr[(x+1) % grid_size, y])
     up = (x, ((y+1) % grid_size), arr[x, (y+1) % grid_size])
     down = (x, ((y-1) % grid_size), arr[x, (y-1) % grid_size])
     neighbors = [left, right, up, down]
     return neighbors
 
-def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=1000):
+def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=1000, sample_rate=10):
     metrics = []
     arr = np.ones((grid_size, grid_size))
     flips = 0

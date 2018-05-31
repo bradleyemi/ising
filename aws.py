@@ -20,8 +20,9 @@ print("Available instances:", n_instances)
 
 START_TEMPERATURE = 2.2
 END_TEMPERATURE = 2.269
-N_TEMPERATURES = 100
+N_TEMPERATURES = 20
 GRID_SIZE = 50
+USE_WOLFF = True
 
 T_c = 2.269
 #temperatures = np.linspace(START_TEMPERATURE, END_TEMPERATURE, N_TEMPERATURES)
@@ -44,6 +45,8 @@ for batch in range(batches):
         _, stdout, _  = client.exec_command('git -C ./ising fetch && git -C ./ising pull')
         print(stdout.read().decode())
         cmd = python_command + ' ' + str(GRID_SIZE) + ' ' + str(temperatures[temperature_index]) + ' ' + str(temperatures[temperature_index]) + '.pkl'
+        if USE_WOLFF:
+          cmd += ' --wolff' 
         print("command is:", cmd)
         stdin, stdout, stderr = client.exec_command(cmd)
         outputs.append(stdout)
@@ -81,7 +84,7 @@ class Experiment(object):
 
 experiment = Experiment(all_metrics, temperatures)
 
-with open("g50_100t_20000iter_closetocritical_below_log_metrics.pkl", 'wb') as f:
+with open("wolff_close_to_critical.pkl", 'wb') as f:
     pickle.dump(experiment, f)
 
 
