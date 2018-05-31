@@ -124,6 +124,8 @@ def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=100
         old_flips = copy(flips)
         flips += len(cluster)
         for it in range(old_flips, flips):
+            if (it % 100000 == 0):
+                print("Percent done:", float(it) /  (grid_size ** 2 * iterations_per_site))
             if (it % (grid_size ** 2 * sample_rate) == 0) and (it >= grid_size ** 2 * burn_in):
                 metrics.append(Metric(arr.mean(), get_energy(arr, J)))
     return Metrics(metrics, temperature, grid_size)

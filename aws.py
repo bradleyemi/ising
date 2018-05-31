@@ -22,8 +22,8 @@ print("Available instances:", n_instances)
 START_TEMPERATURE = 2.2
 END_TEMPERATURE = 2.269
 N_TEMPERATURES = 20
-GRID_SIZE = 25
-USE_WOLFF = True
+GRID_SIZE = 50
+USE_WOLFF = False
 N_CONNECTION_ATTEMPTS = 3
 
 T_c = 2.269
@@ -50,7 +50,10 @@ for batch in range(batches):
             except:
                 if connection_attempt == N_CONNECTION_ATTEMPTS - 1:
                     raise("Number of connection attempts maxed out.")
-
+        
+        _, stdout, stderr  = client.exec_command('git -C ./ising stash')
+        print(stdout.read().decode())
+        print(stderr.read().decode())
         _, stdout, stderr  = client.exec_command('git -C ./ising pull')
         # wait for the git pull before executing...
         print(stdout.read().decode())
@@ -101,7 +104,7 @@ class Experiment(object):
 
 experiment = Experiment(all_metrics, temperatures)
 
-with open("wolff_close_to_critical.pkl", 'wb') as f:
+with open("metropolis_50x50_close_to_critical.pkl", 'wb') as f:
     pickle.dump(experiment, f)
 
 

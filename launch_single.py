@@ -4,8 +4,8 @@ import numpy as np
 from utils import simulate_local, simulate_wolff
 import time
 
-ITERATIONS_PER_SITE = 20000
-BURN_IN = 2000
+ITERATIONS_PER_SITE = 5000
+BURN_IN = 1000
 SAMPLE_RATE = 10
 
 parser = argparse.ArgumentParser()
