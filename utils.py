@@ -69,6 +69,8 @@ def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=100
     metrics = []
     arr = np.ones((grid_size, grid_size))
     for i in range(int(grid_size ** 2 * iterations_per_site)):
+        if (i % 500000 == 0):
+            print("Percent done:", float(i) / (grid_size ** 2 * iterations_per_site))
         x = random.randint(0, grid_size - 1)
         y = random.randint(0, grid_size - 1)
 

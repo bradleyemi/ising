@@ -22,19 +22,20 @@ print("Available instances:", n_instances)
 START_TEMPERATURE = 1.0
 END_TEMPERATURE = 3.5
 N_TEMPERATURES = 20
-GRID_SIZE = 50
+GRID_SIZE = 100
 USE_WOLFF = False
 N_CONNECTION_ATTEMPTS = 3
 
 T_c = 2.269
+'''
 temperatures = np.linspace(START_TEMPERATURE, END_TEMPERATURE, N_TEMPERATURES)
 '''
+
 temperatures_below = T_c - T_c * np.logspace(-3, -0.5, num=N_TEMPERATURES/2) 
 temperatures_above = T_c + T_c * np.logspace(-3, -0.5, num=N_TEMPERATURES/2)
 temperatures = []
 temperatures.extend(temperatures_below)
 temperatures.extend(temperatures_above)
-'''
 
 print("Number of temperatures:", len(list(temperatures)))
 
@@ -110,7 +111,7 @@ class Experiment(object):
 
 experiment = Experiment(all_metrics, temperatures)
 
-with open("metropolis_50x50_critical_5000iter_2sidedlin.pkl", 'wb') as f:
+with open("metropolis_100x100_critical_5000iter_2sidedlog.pkl", 'wb') as f:
     pickle.dump(experiment, f)
 
 
