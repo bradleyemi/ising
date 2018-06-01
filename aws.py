@@ -82,7 +82,7 @@ for batch in range(batches):
         stderrs.append(stderr)
         temperature_indexes.append(temperature_index)
         temperature_index += 1
-    '''
+    
     for instance_number, output in enumerate(outputs):
         print("Output {} of {}".format(temperature_indexes[instance_number] + 1, N_TEMPERATURES))
         print("STDOUT")
@@ -90,10 +90,10 @@ for batch in range(batches):
             print(line, end="")
         print("STDERR")
         print(stderrs[instance_number].read().decode())
-    '''
+    
     #hack: since SSH can hang up and break the stdout read commands, run everything in background and wait 10 minutes
-    print("sleeping...")
-    time.sleep(600)
+    #print("sleeping...")
+    #time.sleep(600)
     for instance_number, instance in enumerate(instances):
         if instance_number >= len(temperature_indexes):
             break

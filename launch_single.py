@@ -20,10 +20,13 @@ s = time.time()
 if args.wolff:
     print("Running Wolff simulation for temperature:", args.temperature)
     metrics = simulate_wolff(args.grid_size, ITERATIONS_PER_SITE, args.temperature, burn_in=BURN_IN, sample_rate=SAMPLE_RATE)
+    print("Susceptibility", metrics.susceptibility)
+    print("Energy:", metrics.energy)
     print("Specific heat:", metrics.specific_heat)
 else:
     print("Running Metropolis simulation for temperature:", args.temperature)
     metrics = simulate_local(args.grid_size, ITERATIONS_PER_SITE, args.temperature, burn_in=BURN_IN, sample_rate=SAMPLE_RATE)
+    print("Susceptibility", metrics.susceptibility)
     print("Energy:", metrics.energy)
     print("Specific heat:", metrics.specific_heat)
 
