@@ -23,8 +23,8 @@ print("Available instances:", n_instances)
 START_TEMPERATURE = 1.0
 END_TEMPERATURE = 3.5
 N_TEMPERATURES = 98
-GRID_SIZE = 30
-USE_WOLFF = True
+GRID_SIZE = 10
+USE_WOLFF = False
 N_CONNECTION_ATTEMPTS = 3
 
 T_c = 2.269
@@ -130,7 +130,7 @@ class Experiment(object):
 
 experiment = Experiment(all_metrics, temperatures)
 
-with open("wolff_30x30_critical_5000iter_2sidedlog_dense.pkl", 'wb') as f:
+with open("metropolis_10x10_critical_5000iter_2sidedlog_dense.pkl", 'wb') as f:
     pickle.dump(experiment, f)
 
 

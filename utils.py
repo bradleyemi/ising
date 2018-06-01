@@ -76,7 +76,7 @@ def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=100
             print("Percent done:", float(i) / (grid_size ** 2 * iterations_per_site))
         #if (i % (grid_size ** 2 * 5) == 0):
         #    print("Appending at iteration", i)
-            plot_metrics.append(copy(arr))
+            #plot_metrics.append(copy(arr))
         x = random.randint(0, grid_size - 1)
         y = random.randint(0, grid_size - 1)
 
