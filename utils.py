@@ -3,6 +3,7 @@ import numpy as np
 import random
 import subprocess
 import signal
+import pickle
 
 class Metric(object):
     def __init__(self, magnetization, energy):
@@ -19,16 +20,16 @@ class Metrics(object):
         self.metrics = metrics
 
         self.magnetization = self.calculate_magnetization(metrics)
-        self.magnetization_error = self.calculate_error(self.calculate_magnetization)
+        #self.magnetization_error = self.calculate_error(self.calculate_magnetization)
 
         self.susceptibility = self.calculate_susceptibility(metrics)
-        self.susceptibility_error = self.calculate_error(self.calculate_susceptibility)
+        #self.susceptibility_error = self.calculate_error(self.calculate_susceptibility)
 
         self.energy = self.calculate_energy(metrics)
-        self.energy_error = self.calculate_error(self.calculate_energy)
+        #self.energy_error = self.calculate_error(self.calculate_energy)
 
         self.specific_heat = self.calculate_specific_heat(metrics)
-        self.specific_heat_error = self.calculate_error(self.calculate_specific_heat)
+        #self.specific_heat_error = self.calculate_error(self.calculate_specific_heat)
 
     def calculate_magnetization(self, metrics_sample):
         return np.array([m.abs_mean for m in metrics_sample]).mean()
@@ -36,7 +37,7 @@ class Metrics(object):
     def calculate_susceptibility(self, metrics_sample):
         return (self.grid_size ** 2 / self.temperature) * \
         (np.array([m.mean_sq for m in metrics_sample]).mean() - \
-        np.array([m.mean for m in metrics_sample]).mean() ** 2)
+        np.array([m.abs_mean for m in metrics_sample]).mean() ** 2)
 
     def calculate_energy(self, metrics_sample):
         return np.array([m.energy for m in metrics_sample]).mean()
@@ -65,12 +66,17 @@ def get_energy(arr, J):
     right = np.roll(arr, 1, axis=1)
     return -J * np.multiply(arr, up + down + left + right).sum()
 
+
 def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=1000, sample_rate=10):
     metrics = []
     arr = np.ones((grid_size, grid_size))
+    #plot_metrics = []
     for i in range(int(grid_size ** 2 * iterations_per_site)):
         if (i % 500000 == 0):
             print("Percent done:", float(i) / (grid_size ** 2 * iterations_per_site))
+        #if (i % (grid_size ** 2 * 5) == 0):
+        #    print("Appending at iteration", i)
+            plot_metrics.append(copy(arr))
         x = random.randint(0, grid_size - 1)
         y = random.randint(0, grid_size - 1)
 
@@ -86,6 +92,8 @@ def simulate_local(grid_size, iterations_per_site, temperature, J=1, burn_in=100
             arr[x,y] = -arr[x,y]
         if (i % (grid_size ** 2 * sample_rate) == 0) and (i >= grid_size ** 2 * burn_in):
             metrics.append(Metric(arr.mean(), get_energy(arr, J)))
+    #with open("plot_metrics_random.pkl", 'wb') as f:
+        #pickle.dump(plot_metrics, f)
     return Metrics(metrics, temperature, grid_size)
 
 def get_neighbors(spin, arr):
@@ -101,6 +109,7 @@ def get_neighbors(spin, arr):
 
 def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=1000, sample_rate=10):
     metrics = []
+    #plot_metrics = []
     arr = np.ones((grid_size, grid_size))
     flips = 0
     add_probability = 1 - np.exp(-2 * J / temperature)
@@ -120,16 +129,20 @@ def simulate_wolff(grid_size, iterations_per_site, temperature, J=1, burn_in=100
                     continue
                 if (neighbor[2] == seed[2]) and (random.random() < add_probability):
                     cluster.append(neighbor)
+            #if (i % (grid_size ** 2 * 5) == 0):
+            #    plot_metrics.append(copy(arr))
             i += 1
         for spin in cluster:
             arr[spin[0], spin[1]] = -arr[spin[0], spin[1]]
         old_flips = copy(flips)
         flips += len(cluster)
         for it in range(old_flips, flips):
-            if (it % 100000 == 0):
-                print("Percent done:", float(it) /  (grid_size ** 2 * iterations_per_site))
+            #if (it % 100000 == 0):
+            #    print("Percent done:", float(it) /  (grid_size ** 2 * iterations_per_site))
             if (it % (grid_size ** 2 * sample_rate) == 0) and (it >= grid_size ** 2 * burn_in):
                 metrics.append(Metric(arr.mean(), get_energy(arr, J)))
+    #with open('plot_metrics_wolff.pkl', 'wb') as f:
+    #    pickle.dump(plot_metrics, f)
     return Metrics(metrics, temperature, grid_size)
 
 
